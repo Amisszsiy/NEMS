@@ -71,6 +71,22 @@ namespace NEMS.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            [Required]
+            [Display(Name = "First name")]
+            [StringLength(255, ErrorMessage = "First name should not be over 255 characters")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [Display(Name = "Last name")]
+            [StringLength(255, ErrorMessage = "Last name should not be over 255 characters")]
+            public string LastName { get; set; }
+
+            [Required]
+            [Display(Name = "Title")]
+            [StringLength(255, ErrorMessage = "Title should not be over 255 characters")]
+            public string Title { get; set; }
+
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -114,6 +130,10 @@ namespace NEMS.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+
+                user.FirstName = Input.FirstName; 
+                user.LastName = Input.LastName;
+                user.Title = Input.Title;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
