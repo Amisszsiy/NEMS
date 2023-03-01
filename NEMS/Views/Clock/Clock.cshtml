@@ -1,21 +1,23 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Clock";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Clock</h1>
+<hr />
 <div class="container">
     <div class="row align-items-start">
-        <div class="col">
-            <div class="m-2">
-                <button class="btn btn-primary btn-lg">Clock In</button>
-            </div>
-            <div class="m-2">
-                <button class="btn btn-secondary btn-lg">Clock Out</button>
-            </div>
+        <div class="col-5">
+            <form method="POST" asp-controller="Clock" asp-action="Register">
+                <div class="m-2">
+                    <button type="submit" class="btn btn-primary btn-lg" name="register" value="clockin">Clock in</button>
+                </div>
+                <div class="m-2">
+                    <button type="submit" class="btn btn-secondary btn-lg" name="register" value="clockout">Clock out</button>
+                </div>
+            </form>
         </div>
-        <div class="col">
+        <div class="col-7">
             <div id="clock">
                 <h1 id="date-time"></h1>
 

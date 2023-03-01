@@ -11,23 +11,26 @@ namespace NEMS.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
-        public ApplicationUser user { get; private set; }
+        public static ApplicationUser _user { get; private set; }
 
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _db = db;
             _userManager = userManager;
+
         }
 
         public IActionResult Index()
         {
             System.Security.Claims.ClaimsPrincipal currentUser = User;
-            var id = _userManager.GetUserId(currentUser);
-            user = _db.Users.Find(id);
-            if (user != null)
+            if (currentUser != null)
             {
-                ViewData["userFirstName"] = user.FirstName;
+                _user = _db.Users.Find(_userManager.GetUserId(currentUser));
+            }
+            if (_user != null)
+            {
+                ViewData["userFirstName"] = _user.FirstName;
             }
             return View();
         }

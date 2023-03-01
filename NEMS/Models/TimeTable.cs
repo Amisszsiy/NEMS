@@ -18,10 +18,14 @@ namespace NEMS.Models
         [AllowNull]
         public DateTime clockout { get; set; }
         [AllowNull]
-        public float worktime { get; set; }
+        public DateTime rClockin { get; set; }
         [AllowNull]
-        public float ot { get; set; }
+        public DateTime rClockout { get; set; }
         [AllowNull]
-        public float et { get; set; }
+        public double worktime { get; set; }
+        [AllowNull]
+        public double ot { get; set; }
+        [AllowNull]
+        public double et { get; set; }
     }
 }

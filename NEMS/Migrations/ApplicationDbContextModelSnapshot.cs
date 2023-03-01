@@ -3,19 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NEMS.Data;
 
 #nullable disable
 
-namespace NEMS.Data.Migrations
+namespace NEMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230223163904_InitDB")]
-    partial class InitDB
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -292,18 +290,24 @@ namespace NEMS.Data.Migrations
                     b.Property<DateTime>("date")
                         .HasColumnType("datetime2");
 
-                    b.Property<float>("et")
-                        .HasColumnType("real");
+                    b.Property<double>("et")
+                        .HasColumnType("float");
 
-                    b.Property<float>("ot")
-                        .HasColumnType("real");
+                    b.Property<double>("ot")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("rClockin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("rClockout")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("uid")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("worktime")
-                        .HasColumnType("real");
+                    b.Property<double>("worktime")
+                        .HasColumnType("float");
 
                     b.HasKey("id");
 
