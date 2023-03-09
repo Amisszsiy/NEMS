@@ -14,9 +14,15 @@ namespace NEMS.Helper
     }
     public class Clock : IClockService
     {
+        private readonly IUserService _userService;
+
+        public Clock(IUserService userService)
+        {
+            _userService = userService;
+        }
         public TimeTable clockIn(TimeTable time, DateTime now)
         {
-            time.uid = HomeController._user.Id;
+            time.uid = _userService.getCurrentUser().Id;
             time.date = now.Date;
             time.clockin = Rounder.setStart(now);
             time.rClockin = Rounder.ceilingTime(time.clockin);
@@ -25,7 +31,7 @@ namespace NEMS.Helper
         }
         public TimeTable clockOut(TimeTable time, DateTime now)
         {
-            time.uid = HomeController._user.Id;
+            time.uid = _userService.getCurrentUser().Id;
             time.date = now.Date;
             time.clockout = now;
             time.rClockout = Rounder.floorTime(time.clockout);
@@ -54,7 +60,7 @@ namespace NEMS.Helper
 
         public TimeTable addWorkDay(TimeTable time)
         {
-            time.uid = HomeController._user.Id;
+            time.uid = _userService.getCurrentUser().Id;
             time.date = time.clockin.Date;
             time.clockin = Rounder.setStart(time.clockin);
             time.rClockin = Rounder.ceilingTime(time.clockin);

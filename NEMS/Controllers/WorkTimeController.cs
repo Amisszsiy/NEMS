@@ -12,12 +12,14 @@ namespace NEMS.Controllers
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IClockService _clock;
+        private readonly IUserService _userService;
 
-        public WorkTimeController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, IClockService clock)
+        public WorkTimeController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, IClockService clock, IUserService userService)
         {
             _db = db;
             _userManager = userManager;
             _clock = clock;
+            _userService = userService;
         }
 
         public IActionResult Index(SummaryViewModel summary)
@@ -27,7 +29,7 @@ namespace NEMS.Controllers
             {
                 summary.Users = _db.Users;
                 summary.TimeTables = _db.TimeTables.Where(x => x.date == DateTime.Today);
-                summary.User = HomeController._user.Id;
+                summary.User = _userService.getCurrentUser().Id;
                 return View(summary);
             }
 

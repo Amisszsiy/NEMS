@@ -13,7 +13,6 @@ namespace NEMS.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
-        public static ApplicationUser? _user { get; private set; }
 
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
@@ -24,14 +23,6 @@ namespace NEMS.Controllers
 
         public IActionResult Index()
         {
-            if (this.User != null)
-            {
-                _user = _db.Users.Find(_userManager.GetUserId(this.User));
-            }
-            if (_user != null)
-            {
-                ViewData["userFirstName"] = _user.FirstName;
-            }
             return View();
         }
 

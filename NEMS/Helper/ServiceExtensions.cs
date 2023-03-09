@@ -5,6 +5,7 @@
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services.AddScoped<IClockService, Clock>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }

@@ -12,12 +12,14 @@ namespace NEMS.Controllers
 
         private readonly ApplicationDbContext _db;
         private readonly IClockService _clock;
+        private readonly IUserService _userService;
         public ApplicationUser user { get; private set; }
 
-        public ClockController(ApplicationDbContext db, IClockService clock)
+        public ClockController(ApplicationDbContext db, IClockService clock, IUserService userService)
         {
             _db = db;
             _clock = clock;
+            _userService = userService;
         }
         public IActionResult Clock()
         {
@@ -28,10 +30,10 @@ namespace NEMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(TimeTable time)
+        public IActionResult Register(TimeTable? time)
         {
             DateTime now = DateTime.Now;
-            if (_db.TimeTables.Any(x => x.date.Date == now.Date && x.uid == HomeController._user.Id))
+            if (_db.TimeTables.Any(x => x.date.Date == now.Date && x.uid == _userService.getCurrentUser().Id))
             {
                 if (HttpContext.Request.Form["register"] == "clockin")
                 {
@@ -39,7 +41,7 @@ namespace NEMS.Controllers
                 }
                 else if(HttpContext.Request.Form["register"] == "clockout")//get that record and update
                 {
-                    time = _db.TimeTables.FirstOrDefault(x => x.date.Date == now.Date && x.uid == HomeController._user.Id);
+                    time = _db.TimeTables.FirstOrDefault(x => x.date.Date == now.Date && x.uid == _userService.getCurrentUser().Id);
                     time = _clock.calculateClockOut(time, now);
                     _db.TimeTables.Update(time);
                     _db.SaveChanges();
@@ -90,7 +92,7 @@ namespace NEMS.Controllers
 
         private ClockViewModel getClockInfo(ClockViewModel todayClock)
         {
-            TimeTable? today = _db.TimeTables.FirstOrDefault(x => x.date.Date == DateTime.Now.Date && x.uid == HomeController._user.Id);
+            TimeTable? today = _db.TimeTables.FirstOrDefault(x => x.date.Date == DateTime.Now.Date && x.uid == _userService.getCurrentUser().Id);
             if (today == null)
             {
                 todayClock.clockIn = null;
@@ -111,7 +113,8 @@ namespace NEMS.Controllers
                 todayClock.clockIn = null;
                 todayClock.clockOut = today.clockout.ToShortTimeString();
             }
-            IEnumerable<TimeTable> thisMonth = _db.TimeTables.Where(x => x.date.Month == DateTime.Now.Month);
+            IEnumerable<TimeTable> thisMonth = _db.TimeTables.Where(x => x.date.Month == DateTime.Now.Month)
+                .Where(x => x.uid == _userService.getCurrentUser().Id);
             double thisMonthOT = thisMonth.Sum(x => x.ot);
             double thisMonthET = thisMonth.Sum(x => x.et);
             todayClock.thisMonthOT = thisMonthOT;
