@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NEMS.Data;
+using NEMS.Helper;
 using NEMS.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace NEMS.Controllers
 {
@@ -11,22 +13,20 @@ namespace NEMS.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
-        public static ApplicationUser _user { get; private set; }
+        public static ApplicationUser? _user { get; private set; }
 
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _db = db;
             _userManager = userManager;
-
         }
 
         public IActionResult Index()
         {
-            System.Security.Claims.ClaimsPrincipal currentUser = User;
-            if (currentUser != null)
+            if (this.User != null)
             {
-                _user = _db.Users.Find(_userManager.GetUserId(currentUser));
+                _user = _db.Users.Find(_userManager.GetUserId(this.User));
             }
             if (_user != null)
             {

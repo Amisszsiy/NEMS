@@ -1,7 +1,49 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model AllSummaryModel;
 @{
 }
 <h1>All Summary</h1>
 <hr />
+<div class="container">
+    <div class="align-items-start">
+        <div class="row">
+            <div class="col-3">
+                <form method="get" asp-controller="WorkTime" asp-action="allSummary">
+                    <label class="form-label" for="from">From</label>
+                    <input type="date" asp-for="From" class="form-control my-2" id="from" />
+                    <label class="form-label" for="until">Until</label>
+                    <input type="date" asp-for="Until" class="form-control my-2" id="until" />
+                    <div>
+                        <button type="submit" class="btn btn-primary my-2" name="submit" value="query">Submit</button>
+                        <button type="submit" class="btn btn-success" name="submit" value="export">Export</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-9">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Over Time</th>
+                            <th scope="col">Early Time</th>
+                            <th scope="col">Pay OT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var user in Model.Users)
+                        {
+                            <tr>
+                                <td>@user.Name</td>
+                                <td>@String.Format("{0:N2}",user.OT)</td>
+                                <td>@String.Format("{0:N2}",user.ET)</td>
+                                <td>@String.Format("{0:N2}",user.PayOT)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

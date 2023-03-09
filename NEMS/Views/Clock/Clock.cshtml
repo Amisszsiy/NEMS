@@ -2,6 +2,7 @@
     ViewData["Title"] = "Clock";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@model ClockViewModel;
 
 <h1>Clock</h1>
 <hr />
@@ -20,6 +21,13 @@
         <div class="col-7">
             <div id="clock">
                 <h1 id="date-time"></h1>
+                <hr />
+                <h2>Clock in: @Model.clockIn</h2>
+                <h2>Clock out: @Model.clockOut</h2>
+                <hr />
+                <h2>Total over time for this month: @String.Format("{0:N2}",Model.thisMonthOT)</h2>
+                <h2>Total early time for this month: @String.Format("{0:N2}",Model.thisMonthET)</h2>
+                <h2>Total work time for this month: @String.Format("{0:N2}",Model.thisMonthPayOT)</h2>
 
             </div>
         </div>

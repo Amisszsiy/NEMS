@@ -15,7 +15,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<IClockService, Clock>();
+builder.Services.RegisterServices();
 
 var app = builder.Build();
 
