@@ -47,6 +47,15 @@ namespace NEMS.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "48ea8115-b808-40b3-8abd-d286e199cc42",
+                            ConcurrencyStamp = "48ea8115-b808-40b3-8abd-d286e199cc42",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -136,6 +145,13 @@ namespace NEMS.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "51da857c-224d-40d3-9ffc-9fb03c9f6e8a",
+                            RoleId = "48ea8115-b808-40b3-8abd-d286e199cc42"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -237,6 +253,26 @@ namespace NEMS.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "51da857c-224d-40d3-9ffc-9fb03c9f6e8a",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "3f2b1472-634f-43dd-9a38-f3db3a154513",
+                            Email = "th_accounting@nc-net.or.jp",
+                            EmailConfirmed = true,
+                            FirstName = "Admin",
+                            LastName = "Admin",
+                            LockoutEnabled = false,
+                            NormalizedUserName = "TH_ACCOUNTING@NC-NET.OR.JP",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFAWJSfKl2iWlrLp4XDuWxzoOQ5ZoQC8Z5nWLgXZB6UmkCNOLX6vw0k9vASi9YjmeA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "691a80b8-2ff4-4e0b-be29-7e53c409f8bb",
+                            Title = "Admin",
+                            TwoFactorEnabled = false,
+                            UserName = "th_accounting@nc-net.or.jp"
+                        });
                 });
 
             modelBuilder.Entity("NEMS.Models.Event", b =>

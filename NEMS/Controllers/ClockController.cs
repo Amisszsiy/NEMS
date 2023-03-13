@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NEMS.Data;
 using NEMS.Helper;
@@ -7,6 +8,7 @@ using System.Linq;
 
 namespace NEMS.Controllers
 {
+    [Authorize]
     public class ClockController : Controller
     {
 
@@ -35,14 +37,17 @@ namespace NEMS.Controllers
             DateTime now = DateTime.Now;
             if (_db.TimeTables.Any(x => x.date.Date == now.Date && x.uid == _userService.getCurrentUser().Id))
             {
-                if (HttpContext.Request.Form["register"] == "clockin")
-                {
-                    return RedirectToAction("Clock");
-                }
-                else if(HttpContext.Request.Form["register"] == "clockout")//get that record and update
+                if(HttpContext.Request.Form["register"] == "clockout")//get that record and update
                 {
                     time = _db.TimeTables.FirstOrDefault(x => x.date.Date == now.Date && x.uid == _userService.getCurrentUser().Id);
-                    time = _clock.calculateClockOut(time, now);
+                    if(time.clockin.Ticks != 0)
+                    {
+                        time = _clock.calculateClockOut(time, now);
+                    }
+                    else
+                    {
+                        time = _clock.clockOut(time, now);
+                    }
                     _db.TimeTables.Update(time);
                     _db.SaveChanges();
                 }
@@ -93,28 +98,17 @@ namespace NEMS.Controllers
         private ClockViewModel getClockInfo(ClockViewModel todayClock)
         {
             TimeTable? today = _db.TimeTables.FirstOrDefault(x => x.date.Date == DateTime.Now.Date && x.uid == _userService.getCurrentUser().Id);
-            if (today == null)
+
+            if (today != null)
             {
-                todayClock.clockIn = null;
-                todayClock.clockOut = null;
+                todayClock.clockIn = (today.clockin.Ticks == 0) ? null : today.clockin.ToShortTimeString();
+                todayClock.clockOut = (today.clockout.Ticks == 0) ? null : today.clockout.ToShortTimeString();
             }
-            else if (today.clockout < today.clockin)
-            {
-                todayClock.clockIn = today.clockin.ToShortTimeString();
-                todayClock.clockOut = null;
-            }
-            else if (today.worktime != 0)
-            {
-                todayClock.clockIn = today.clockin.ToShortTimeString();
-                todayClock.clockOut = today.clockout.ToShortTimeString();
-            }
-            else
-            {
-                todayClock.clockIn = null;
-                todayClock.clockOut = today.clockout.ToShortTimeString();
-            }
+
             IEnumerable<TimeTable> thisMonth = _db.TimeTables.Where(x => x.date.Month == DateTime.Now.Month)
-                .Where(x => x.uid == _userService.getCurrentUser().Id);
+                .Where(x => x.uid == _userService.getCurrentUser().Id)
+                .Where(x => x.worktime != 0);
+
             double thisMonthOT = thisMonth.Sum(x => x.ot);
             double thisMonthET = thisMonth.Sum(x => x.et);
             todayClock.thisMonthOT = thisMonthOT;

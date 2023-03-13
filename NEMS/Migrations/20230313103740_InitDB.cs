@@ -30,7 +30,7 @@ namespace NEMS.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -195,6 +195,21 @@ namespace NEMS.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "48ea8115-b808-40b3-8abd-d286e199cc42", "48ea8115-b808-40b3-8abd-d286e199cc42", "Admin", "ADMIN" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Title", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "51da857c-224d-40d3-9ffc-9fb03c9f6e8a", 0, "3f2b1472-634f-43dd-9a38-f3db3a154513", "th_accounting@nc-net.or.jp", true, "Admin", "Admin", false, null, null, "TH_ACCOUNTING@NC-NET.OR.JP", "AQAAAAEAACcQAAAAEFAWJSfKl2iWlrLp4XDuWxzoOQ5ZoQC8Z5nWLgXZB6UmkCNOLX6vw0k9vASi9YjmeA==", null, false, "691a80b8-2ff4-4e0b-be29-7e53c409f8bb", "Admin", false, "th_accounting@nc-net.or.jp" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "48ea8115-b808-40b3-8abd-d286e199cc42", "51da857c-224d-40d3-9ffc-9fb03c9f6e8a" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

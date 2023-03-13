@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NEMS.Data;
@@ -7,6 +8,7 @@ using NEMS.Models;
 
 namespace NEMS.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class WorkTimeController: Controller
     {
         private readonly ApplicationDbContext _db;
