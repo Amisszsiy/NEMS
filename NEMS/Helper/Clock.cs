@@ -60,7 +60,6 @@ namespace NEMS.Helper
 
         public TimeTable addWorkDay(TimeTable time)
         {
-            time.uid = _userService.getCurrentUser().Id;
             time.date = time.clockin.Date;
             time.clockin = Rounder.setStart(time.clockin);
             time.rClockin = Rounder.ceilingTime(time.clockin);

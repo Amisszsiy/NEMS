@@ -8,7 +8,7 @@ using NEMS.Models;
 
 namespace NEMS.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class WorkTimeController: Controller
     {
         private readonly ApplicationDbContext _db;
@@ -24,14 +24,15 @@ namespace NEMS.Controllers
             _userService = userService;
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Index(SummaryViewModel summary)
         {
 
             if (summary.From == null)
             {
-                summary.Users = _db.Users;
-                summary.TimeTables = _db.TimeTables.Where(x => x.date == DateTime.Today);
-                summary.User = _userService.getCurrentUser().Id;
+                summary.Users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
+                summary.User = _db.Users.FirstOrDefault(x => x.Id != _userService.getCurrentUser().Id).Id;
+                summary.TimeTables = _db.TimeTables.Where(x => x.date == DateTime.Today).Where(x => x.uid == summary.User);
                 return View(summary);
             }
 
@@ -40,22 +41,54 @@ namespace NEMS.Controllers
             return View(summary);
         }
 
+        public IActionResult CheckPersonalWorkTime(SummaryViewModel summary)
+        {
+            if(summary.From == null)
+            {
+                summary.TimeTables = _db.TimeTables.Where(x => x.date == DateTime.Today)
+                    .Where(x => x.uid == _userService.getCurrentUser().Id);
+            }
+
+            summary.TimeTables = _db.TimeTables.Where(x => x.date >= summary.From)
+                .Where(x => x.date <= summary.Until)
+                .Where(x => x.uid == _userService.getCurrentUser().Id);
+
+            return View(summary);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult editClock(SummaryViewModel summary)
         {
-            TimeTable editRecord;
-            editRecord = _db.TimeTables.FirstOrDefault(x => x.id == summary.Clock.id);
-            editRecord = _clock.editWorkDay(editRecord, summary.Clock);
+            if (HttpContext.Request.Form["submit"] == "edit")
+            {
+                TimeTable editRecord;
+                editRecord = _db.TimeTables.FirstOrDefault(x => x.id == summary.Clock.id);
+                editRecord = _clock.editWorkDay(editRecord, summary.Clock);
 
-            _db.TimeTables.Update(editRecord);
-            _db.SaveChanges();
+                _db.TimeTables.Update(editRecord);
+                _db.SaveChanges();
+            }
+            else if (HttpContext.Request.Form["submit"] == "delete")
+            {
+                TimeTable deleteRecord;
+                deleteRecord = _db.TimeTables.FirstOrDefault(x => x.id == summary.Clock.id);
+
+                _db.TimeTables.Remove(deleteRecord);
+                _db.SaveChanges();
+            }
+            else
+            {
+                //Something gone wrong if we get this far.
+            }
 
             summary = getQuery(summary);
 
             return View("Index", summary);
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult allSummary(AllSummaryModel allSummary, string submit)
         {
             if(allSummary == null)
@@ -72,7 +105,7 @@ namespace NEMS.Controllers
                 IEnumerable<TimeTable> timeTables = _db.TimeTables.Where(x => x.date >= allSummary.From)
                     .Where(x => x.date <= allSummary.Until);
 
-                IEnumerable<ApplicationUser> users = _db.Users;
+                IEnumerable<ApplicationUser> users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
 
                 string format = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
@@ -123,7 +156,7 @@ namespace NEMS.Controllers
 
         private SummaryViewModel getQuery(SummaryViewModel summary)
         {
-            summary.Users = _db.Users;
+            summary.Users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
             summary.TimeTables = _db.TimeTables.Where(x => x.date >= summary.From)
                 .Where(x => x.date <= summary.Until)
                 .Where(x => x.uid == summary.User);
@@ -136,7 +169,7 @@ namespace NEMS.Controllers
             IEnumerable<TimeTable>? timeTables = _db.TimeTables.Where(x => x.date >= allSummary.From)
                 .Where(x => x.date <= allSummary.Until);
 
-            IEnumerable<ApplicationUser> users = _db.Users;
+            IEnumerable<ApplicationUser> users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
 
             allSummary.Users = new List<UserOT>();
 

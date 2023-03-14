@@ -1,0 +1,21 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model PersonWorkTime;
+@{
+}
+<h1>Add Person Work Time</h1>
+<hr />
+<form method="post" asp-controller="Clock" asp-action="AddPersonWorkTime">
+    <div class="col-3">
+        <select asp-for="User" class="form-select my-2">
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Id">@user.FirstName</option>
+            }
+        </select>
+        <input class="form-control my-2" type="datetime-local" asp-for="TimeTable.clockin" />
+        <input class="form-control my-2" type="datetime-local" asp-for="TimeTable.clockout" />
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+</form>

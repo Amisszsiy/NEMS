@@ -1,0 +1,53 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model SummaryViewModel;
+@{
+}
+<h1>Work Time Summary</h1>
+<hr />
+<div class="container">
+    <div class="align-items-start">
+        <div class="row">
+            <div class="col-3">
+                <form method="GET" asp-controller="WorkTime" asp-action="CheckPersonalWorkTime">
+                    <input asp-for="From" class="form-control my-2" type="date" />
+                    <input asp-for="Until" class="form-control my-2" type="date" />
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+
+            </div>
+            <div class="col-9">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Clock in</th>
+                            <th scope="col">Clock in (Rounded)</th>
+                            <th scope="col">Clock out</th>
+                            <th scope="col">Clock out (Rounded)</th>
+                            <th scope="col">Work Time</th>
+                            <th scope="col">Over Time</th>
+                            <th scope="col">Early Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in Model.TimeTables)
+                        {
+                            <tr>
+                                <td>@row.date.ToShortDateString()</td>
+                                <td>@row.clockin.ToShortTimeString()</td>
+                                <td>@row.rClockin.ToShortTimeString()</td>
+                                <td>@row.clockout.ToShortTimeString()</td>
+                                <td>@row.rClockout.ToShortTimeString()</td>
+                                <td>@String.Format("{0:N2}",row.worktime)</td>
+                                <td>@String.Format("{0:N2}",row.ot)</td>
+                                <td>@String.Format("{0:N2}",row.et)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -72,7 +72,32 @@ namespace NEMS.Controllers
             return RedirectToAction("Clock");
         }
 
-        //Test input
+        [Authorize(Roles = "Admin")]
+        public IActionResult AddPersonWorkTime()
+        {
+            PersonWorkTime workTime = new PersonWorkTime();
+            workTime.Users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
+            workTime.User = workTime.Users.First().FirstName;
+            return View(workTime);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddPersonWorkTime(PersonWorkTime workTime)
+        {
+            workTime.TimeTable.uid = workTime.User;
+
+            if(!_db.TimeTables.Any(x => x.date == workTime.TimeTable.clockin.Date && x.uid == workTime.TimeTable.uid))
+            {
+                workTime.TimeTable = _clock.addWorkDay(workTime.TimeTable);
+                _db.TimeTables.Add(workTime.TimeTable);
+                _db.SaveChanges();
+            }
+
+            return Redirect("../Home/Index");
+        }
+
         public IActionResult AddTime()
         {
             return View();
@@ -87,10 +112,15 @@ namespace NEMS.Controllers
                 return RedirectToAction("Clock");
             }
 
-            time = _clock.addWorkDay(time);
+            time.uid = _userService.getCurrentUser().Id;
 
-            _db.TimeTables.Update(time);
-            _db.SaveChanges();
+            if(!_db.TimeTables.Any(x => x.date == time.clockin.Date && x.uid == time.uid))
+            {
+                time = _clock.addWorkDay(time);
+
+                _db.TimeTables.Update(time);
+                _db.SaveChanges();
+            }
 
             return RedirectToAction("Clock");
         }
