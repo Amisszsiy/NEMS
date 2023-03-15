@@ -1,0 +1,86 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model RoleModel;
+@{
+}
+<h1>Manage user's role</h1>
+<hr />
+<div>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var row in Model.UserRoles)
+            {
+                <tr>
+                    <td>@row.UserName</td>
+                    <td>@row.RoleName</td>
+                    <td><button data-bs-toggle="modal" 
+                        data-bs-target="#editModal" 
+                        data-bs-id="@row.uid" 
+                        data-bs-name="@row.UserName" 
+                        data-bs-role="@row.RoleName"
+                        class="btn btn-warning">Edit</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" asp-controller="Roles" asp-action="editRole">
+                <div class="modal-body">
+                    <input type="hidden" class="id" asp-for="UserRole.uid">
+                    <div class="mb-3">
+                        <label class="form-label">Select role</label>
+                        <select asp-for="UserRole.RoleName" class="form-select">
+                            @foreach(var option in Model.Roles)
+                            {
+                                <option value="@option.Name">@option.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" name="submit" value="edit">Edit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var editModal = document.getElementById('editModal')
+    editModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = event.relatedTarget
+        // Extract info from data-bs-* attributes
+        var id = button.getAttribute('data-bs-id')
+        var name = button.getAttribute('data-bs-name')
+        var role = button.getAttribute('data-bs-role')
+        // If necessary, you could initiate an AJAX request here
+        // and then do the updating in a callback.
+        //
+        // Update the modal's content.
+        var editName = editModal.querySelector('.modal-title')
+        var editId = editModal.querySelector('.modal-body .id')
+        var selector = editModal.querySelector('.form-select')
+
+        editName.textContent = 'Select role for ' + name
+        editId.value = id
+        selector.value = role
+    })
+</script>

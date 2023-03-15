@@ -199,12 +199,17 @@ namespace NEMS.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "48ea8115-b808-40b3-8abd-d286e199cc42", "48ea8115-b808-40b3-8abd-d286e199cc42", "Admin", "ADMIN" });
+                values: new object[,]
+                {
+                    { "19687fdd-11a2-4dee-a409-fc8032e5ff93", "19687fdd-11a2-4dee-a409-fc8032e5ff93", "User", "USER" },
+                    { "2c6f3a66-652e-4fcc-b90a-184bd6463f28", "2c6f3a66-652e-4fcc-b90a-184bd6463f28", "Sales", "SALES" },
+                    { "48ea8115-b808-40b3-8abd-d286e199cc42", "48ea8115-b808-40b3-8abd-d286e199cc42", "Admin", "ADMIN" }
+                });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Title", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "51da857c-224d-40d3-9ffc-9fb03c9f6e8a", 0, "3f2b1472-634f-43dd-9a38-f3db3a154513", "th_accounting@nc-net.or.jp", true, "Admin", "Admin", false, null, null, "TH_ACCOUNTING@NC-NET.OR.JP", "AQAAAAEAACcQAAAAEFAWJSfKl2iWlrLp4XDuWxzoOQ5ZoQC8Z5nWLgXZB6UmkCNOLX6vw0k9vASi9YjmeA==", null, false, "691a80b8-2ff4-4e0b-be29-7e53c409f8bb", "Admin", false, "th_accounting@nc-net.or.jp" });
+                values: new object[] { "51da857c-224d-40d3-9ffc-9fb03c9f6e8a", 0, "e80ebbfd-fff2-4369-bda0-bed876ab79d4", "th_accounting@nc-net.or.jp", true, "Admin", "Admin", false, null, null, "TH_ACCOUNTING@NC-NET.OR.JP", "AQAAAAEAACcQAAAAEERbJegtTj6K/vYLNAryhjOOgZf7oDO/yQF9PbCmXYuTsb7x+uVu3+IHbU6Ft3oQpw==", null, false, "44327d80-85b1-4710-97ce-8703148537ee", "Admin", false, "th_accounting@nc-net.or.jp" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -249,6 +254,11 @@ namespace NEMS.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TimeTables_date",
+                table: "TimeTables",
+                column: "date");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -51,7 +51,8 @@ namespace NEMS.Controllers
 
             summary.TimeTables = _db.TimeTables.Where(x => x.date >= summary.From)
                 .Where(x => x.date <= summary.Until)
-                .Where(x => x.uid == _userService.getCurrentUser().Id);
+                .Where(x => x.uid == _userService.getCurrentUser().Id)
+                .OrderBy(x => x.date);
 
             return View(summary);
         }
@@ -102,8 +103,10 @@ namespace NEMS.Controllers
 
             if(submit == "export")
             {
-                IEnumerable<TimeTable> timeTables = _db.TimeTables.Where(x => x.date >= allSummary.From)
-                    .Where(x => x.date <= allSummary.Until);
+                IEnumerable<TimeTable> timeTables = _db.TimeTables
+                    .Where(x => x.date >= allSummary.From)
+                    .Where(x => x.date <= allSummary.Until)
+                    .OrderBy(x => x.date);
 
                 IEnumerable<ApplicationUser> users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
 
@@ -159,15 +162,18 @@ namespace NEMS.Controllers
             summary.Users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
             summary.TimeTables = _db.TimeTables.Where(x => x.date >= summary.From)
                 .Where(x => x.date <= summary.Until)
-                .Where(x => x.uid == summary.User);
+                .Where(x => x.uid == summary.User)
+                .OrderBy(x => x.date);
 
             return summary;
         }
 
         private AllSummaryModel getAllSummary(AllSummaryModel allSummary)
         {
-            IEnumerable<TimeTable>? timeTables = _db.TimeTables.Where(x => x.date >= allSummary.From)
-                .Where(x => x.date <= allSummary.Until);
+            IEnumerable<TimeTable>? timeTables = _db.TimeTables
+                .Where(x => x.date >= allSummary.From)
+                .Where(x => x.date <= allSummary.Until)
+                .OrderBy(x => x.date);
 
             IEnumerable<ApplicationUser> users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
 

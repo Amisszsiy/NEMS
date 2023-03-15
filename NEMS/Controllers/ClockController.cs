@@ -98,11 +98,13 @@ namespace NEMS.Controllers
             return Redirect("../Home/Index");
         }
 
+        [Authorize(Roles = "Sales")]
         public IActionResult AddTime()
         {
             return View();
         }
 
+        [Authorize(Roles = "Sales")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddTime(TimeTable time)

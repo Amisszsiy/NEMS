@@ -12,7 +12,7 @@ using NEMS.Data;
 namespace NEMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230313103740_InitDB")]
+    [Migration("20230315131232_InitDB")]
     partial class InitDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,6 +57,20 @@ namespace NEMS.Migrations
                             ConcurrencyStamp = "48ea8115-b808-40b3-8abd-d286e199cc42",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "2c6f3a66-652e-4fcc-b90a-184bd6463f28",
+                            ConcurrencyStamp = "2c6f3a66-652e-4fcc-b90a-184bd6463f28",
+                            Name = "Sales",
+                            NormalizedName = "SALES"
+                        },
+                        new
+                        {
+                            Id = "19687fdd-11a2-4dee-a409-fc8032e5ff93",
+                            ConcurrencyStamp = "19687fdd-11a2-4dee-a409-fc8032e5ff93",
+                            Name = "User",
+                            NormalizedName = "USER"
                         });
                 });
 
@@ -261,16 +275,16 @@ namespace NEMS.Migrations
                         {
                             Id = "51da857c-224d-40d3-9ffc-9fb03c9f6e8a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3f2b1472-634f-43dd-9a38-f3db3a154513",
+                            ConcurrencyStamp = "e80ebbfd-fff2-4369-bda0-bed876ab79d4",
                             Email = "th_accounting@nc-net.or.jp",
                             EmailConfirmed = true,
                             FirstName = "Admin",
                             LastName = "Admin",
                             LockoutEnabled = false,
                             NormalizedUserName = "TH_ACCOUNTING@NC-NET.OR.JP",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFAWJSfKl2iWlrLp4XDuWxzoOQ5ZoQC8Z5nWLgXZB6UmkCNOLX6vw0k9vASi9YjmeA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEERbJegtTj6K/vYLNAryhjOOgZf7oDO/yQF9PbCmXYuTsb7x+uVu3+IHbU6Ft3oQpw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "691a80b8-2ff4-4e0b-be29-7e53c409f8bb",
+                            SecurityStamp = "44327d80-85b1-4710-97ce-8703148537ee",
                             Title = "Admin",
                             TwoFactorEnabled = false,
                             UserName = "th_accounting@nc-net.or.jp"
@@ -348,6 +362,8 @@ namespace NEMS.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("id");
+
+                    b.HasIndex("date");
 
                     b.ToTable("TimeTables");
                 });

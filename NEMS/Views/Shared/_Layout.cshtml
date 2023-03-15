@@ -43,14 +43,20 @@
                                 <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="WorkTime" asp-action="allSummary">Summary (All)</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Employee's Role</a>
+                                </li>
                             }else
                             {
                                 <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Clock" asp-action="Clock">Clock in/out</a>
                                 </li>
-                                <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Clock" asp-action="AddTime">Add Time</a>
-                                </li>
+                                @if (User.IsInRole("Sales"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Clock" asp-action="AddTime">Add Time</a>
+                                    </li>
+                                }
                                 <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="WorkTime" asp-action="CheckPersonalWorkTime">Check Work Time</a>
                                 </li>

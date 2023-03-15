@@ -18,6 +18,8 @@ namespace NEMS.Data
             base.OnModelCreating(builder);
             builder.ApplyConfiguration(new ApplicationUserEntityConfiguration());
 
+            builder.Entity<TimeTable>().HasIndex(x => x.date);
+
             string ADMIN_ID = "51da857c-224d-40d3-9ffc-9fb03c9f6e8a";
             string ROLE_ID = "48ea8115-b808-40b3-8abd-d286e199cc42";
 
@@ -27,6 +29,18 @@ namespace NEMS.Data
                 NormalizedName = "ADMIN",
                 Id = ROLE_ID,
                 ConcurrencyStamp = ROLE_ID
+            }, new IdentityRole
+            {
+                Name = "Sales",
+                NormalizedName = "SALES",
+                Id = "2c6f3a66-652e-4fcc-b90a-184bd6463f28",
+                ConcurrencyStamp = "2c6f3a66-652e-4fcc-b90a-184bd6463f28"
+            }, new IdentityRole
+            {
+                Name = "User",
+                NormalizedName = "USER",
+                Id = "19687fdd-11a2-4dee-a409-fc8032e5ff93",
+                ConcurrencyStamp = "19687fdd-11a2-4dee-a409-fc8032e5ff93"
             });
 
             var adminUser = new ApplicationUser
