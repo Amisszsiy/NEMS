@@ -1,0 +1,198 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using NEMS.Helper;
+@inject IUserService userService;
+@model CalendarModel;
+@{
+}
+<script src="~/js/index.global.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded',function(){
+        var calendarE1 = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarE1,{
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next,today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+            eventDidMount: function (info) {
+                $(info.el).popover({
+                    content: info.event.extendedProps.description,
+                    placement: 'top',
+                    trigger: 'hover',
+                    container: 'body'
+                });
+            },
+    @if(Model.User == userService.getCurrentUser().Id)
+    {
+        <text>
+                selectable: true,
+                select: function (info) {
+                    addSchedule(info);
+                },
+                eventClick: function (info) {
+                    editSchedule(info);
+                },
+        </text>
+    }
+            events: @Html.Raw(Model.Events)
+        });
+        calendar.render();
+    });
+</script>
+<div class="container">
+    <h1 class="align-items-start">Schedule</h1>
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#leaveModal"><i class="bi bi-plus-square"></i> Leave</button>
+        </div>
+        <div class="col">
+            <form method="GET" asp-controller="Calendar" asp-action="Index">
+                <div class="row">
+                    <div class="col-3">
+                        <select asp-for="User" class="form-select" onchange="this.form.submit()">
+                            @foreach(var user in Model.Users)
+                            {
+                                <option value="@user.Id">@user.FirstName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<hr />
+<div>
+    <div id="calendar"></div>
+</div>
+
+<!--Event Modal-->
+<div class="modal fade" id="scheduleEvent" tabindex="-1" aria-labelledby="eventLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventLabel">Manage Schedule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" asp-controller="Calendar" asp-action="Schedule">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <input asp-for="Event.id" type="hidden" id="id" />
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <input asp-for="Event.title" type="text" class="form-control" id="title" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea asp-for="Event.description" class="form-control" id="description"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Start</label>
+                                <input asp-for="Event.start" type="datetime-local" id="start" class="form-control" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">End</label>
+                                <input asp-for="Event.end" type="datetime-local" id="end" class="form-control" required/>
+                            </div>
+                            <div class="mb-3">
+                                <input asp-for="Event.allDay" type="checkbox" id="allDay" class="form-check-input" />
+                                <label class="form-check-label" for="allDay"> All day</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label">Participants</label>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <select id="multiselect" class="form-control" size="7" multiple="multiple">
+                                                @foreach (var user in Model.Users)
+                                                {
+                                                    @if(user.Id != userService.getCurrentUser().Id)
+                                                    {
+                                                        <option value="@user.Id">@user.FirstName</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-2">
+                                            <button type="button" id="multiselect_rightAll" class="btn btn-block"><i class="bi bi-fast-forward-fill"></i></button>
+                                            <button type="button" id="multiselect_rightSelected" class="btn btn-block"><i class="bi bi-chevron-right"></i></button>
+                                            <button type="button" id="multiselect_leftSelected" class="btn btn-block"><i class="bi bi-chevron-left"></i></button>
+                                            <button type="button" id="multiselect_leftAll" class="btn btn-block"><i class="bi bi-skip-backward-fill"></i></button>
+                                        </div>
+                                        <div class="col-5">
+                                            <select asp-for="Participants" id="multiselect_to" class="form-control" size="7" multiple="multiple"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="modal-footer" class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="button" type="submit" name="submit"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--Leave Modal-->
+<div class="modal fade" id="leaveModal" tabindex="-1" aria-labelledby="leaveLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="leaveLabel">Leave Schedule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" asp-controller="Calendar" asp-action="Schedule">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <select asp-for="Event.title" class="form-select" required>
+                                    <option value="Sick Leave">Sick Leave</option>
+                                    <option value="Annual Leave">Annual Leave</option>
+                                    <option value="Personal Leave">Personal Leave</option>
+                                    <option value="Compensation Leave">Compensation Leave</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea asp-for="Event.description" class="form-control" id="description"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Start</label>
+                                <input asp-for="Event.start" type="datetime-local" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">End</label>
+                                <input asp-for="Event.end" type="datetime-local" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <input asp-for="Event.allDay" type="checkbox" id="adl" class="form-check-input" />
+                                <label class="form-check-label" for="adl"> All day</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="modal-footer" class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" name="submit" value="add">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

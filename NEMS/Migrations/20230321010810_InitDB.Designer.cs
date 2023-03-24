@@ -12,7 +12,7 @@ using NEMS.Data;
 namespace NEMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230315131232_InitDB")]
+    [Migration("20230321010810_InitDB")]
     partial class InitDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -275,16 +275,16 @@ namespace NEMS.Migrations
                         {
                             Id = "51da857c-224d-40d3-9ffc-9fb03c9f6e8a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e80ebbfd-fff2-4369-bda0-bed876ab79d4",
+                            ConcurrencyStamp = "048225e1-17e2-42e1-a870-b93ecd01eb1f",
                             Email = "th_accounting@nc-net.or.jp",
                             EmailConfirmed = true,
                             FirstName = "Admin",
                             LastName = "Admin",
                             LockoutEnabled = false,
                             NormalizedUserName = "TH_ACCOUNTING@NC-NET.OR.JP",
-                            PasswordHash = "AQAAAAEAACcQAAAAEERbJegtTj6K/vYLNAryhjOOgZf7oDO/yQF9PbCmXYuTsb7x+uVu3+IHbU6Ft3oQpw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGWLynmzRicgjRdnLDnb/ldqv9SuxrINXfMB4HDsC7jNvVl/UeZGLhrROvAQrMV9ng==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "44327d80-85b1-4710-97ce-8703148537ee",
+                            SecurityStamp = "edac3aa4-0a21-4183-94e2-d2616f33a989",
                             Title = "Admin",
                             TwoFactorEnabled = false,
                             UserName = "th_accounting@nc-net.or.jp"
@@ -299,8 +299,10 @@ namespace NEMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
 
+                    b.Property<bool>("allDay")
+                        .HasColumnType("bit");
+
                     b.Property<string>("description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("end")
@@ -308,6 +310,12 @@ namespace NEMS.Migrations
 
                     b.Property<bool>("isOwner")
                         .HasColumnType("bit");
+
+                    b.Property<string>("leave")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("refId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("start")
                         .HasColumnType("datetime2");
@@ -322,7 +330,7 @@ namespace NEMS.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("events");
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("NEMS.Models.TimeTable", b =>

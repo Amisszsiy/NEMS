@@ -16,10 +16,16 @@ namespace NEMS.Models
         [Required]
         public DateTime end { get; set; }
         [Required]
+        public bool allDay { get; set; }
+        [Required]
         public string user { get; set; }
         [Required]
         public bool isOwner { get; set; }
         [AllowNull]
-        public string description { get; set; }
+        public int? refId { get; set; }
+        [AllowNull]
+        public string? leave { get; set; }
+        [AllowNull]
+        public string? description { get; set; }
     }
 }

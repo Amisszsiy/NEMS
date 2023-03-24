@@ -1,0 +1,94 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model LeaveModel;
+@{
+    double sl = 0;
+    double al = 0;
+    double pl = 0;
+    double cl = 0;
+}
+<h1>Leave Management</h1>
+<hr />
+<div class="container">
+    <div class="align-items-start">
+        <div class="row">
+            <div class="col-3">
+                <form method="GET" asp-controller="Leave" asp-action="Index">
+                    <select asp-for="User" class="form-select my-2">
+                        @foreach(var user in Model.Users)
+                        {
+                            <option value="@user.Id">@user.FirstName</option>
+                        }
+                    </select>
+                    <input asp-for="From" class="form-control my-2" type="date" />
+                    <input asp-for="Until" class="form-control my-2" type="date" />
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div class="col-9">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Sick Leave</th>
+                            <th scope="col">Annual Leave</th>
+                            <th scope="col">Personal Leave</th>
+                            <th scope="col">Compensation Leave</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var row in Model.Leaves)
+                        {
+                            <tr>
+                                <td>@row.start.ToShortDateString()</td>
+                                <td>
+                                    @if(row.title == "Sick Leave")
+                                    {
+                                        double i = TimeSpan.FromTicks(row.end.Ticks - row.start.Ticks).TotalDays;
+                                        @String.Format("{0:N2}",i)
+                                        sl += i;
+                                    }
+                                </td>
+                                <td>
+                                    @if(row.title == "Annual Leave")
+                                    {
+                                        double i = TimeSpan.FromTicks(row.end.Ticks - row.start.Ticks).TotalDays;
+                                        @String.Format("{0:N2}",i)
+                                        al += i;
+                                    }
+                                </td>
+                                <td>
+                                    @if(row.title == "Personal Leave")
+                                    {
+                                        double i = TimeSpan.FromTicks(row.end.Ticks - row.start.Ticks).TotalDays;
+                                        @String.Format("{0:N2}",i)
+                                        pl += i;
+                                    }
+                                </td>
+                                <td>
+                                    @if(row.title == "Compensation Leave")
+                                    {
+                                        double i = TimeSpan.FromTicks(row.end.Ticks - row.start.Ticks).TotalDays;
+                                        @String.Format("{0:N2}",i)
+                                        cl += i;
+                                    }
+                                </td>
+                                <td>@row.description</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td></td>
+                            <td>@String.Format("{0:N2}",sl)</td>
+                            <td>@String.Format("{0:N2}",al)</td>
+                            <td>@String.Format("{0:N2}",pl)</td>
+                            <td>@String.Format("{0:N2}",cl)</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

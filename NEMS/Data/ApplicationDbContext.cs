@@ -69,7 +69,7 @@ namespace NEMS.Data
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<TimeTable> TimeTables { get; set; }
-        public DbSet<Event> events { get; set; }
+        public DbSet<Event> Events { get; set; }
     }
 
     internal class ApplicationUserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>

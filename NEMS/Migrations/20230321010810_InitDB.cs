@@ -52,7 +52,7 @@ namespace NEMS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "events",
+                name: "Events",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
@@ -60,13 +60,16 @@ namespace NEMS.Migrations
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     end = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    allDay = table.Column<bool>(type: "bit", nullable: false),
                     user = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     isOwner = table.Column<bool>(type: "bit", nullable: false),
+                    refId = table.Column<int>(type: "int", nullable: true),
+                    leave = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_events", x => x.id);
+                    table.PrimaryKey("PK_Events", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,10 +80,10 @@ namespace NEMS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     uid = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    clockin = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    clockout = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    rClockin = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    rClockout = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    clockin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    clockout = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    rClockin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    rClockout = table.Column<DateTime>(type: "datetime2", nullable: false),
                     worktime = table.Column<double>(type: "float", nullable: true),
                     ot = table.Column<double>(type: "float", nullable: true),
                     et = table.Column<double>(type: "float", nullable: true)
@@ -209,7 +212,7 @@ namespace NEMS.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Title", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "51da857c-224d-40d3-9ffc-9fb03c9f6e8a", 0, "e80ebbfd-fff2-4369-bda0-bed876ab79d4", "th_accounting@nc-net.or.jp", true, "Admin", "Admin", false, null, null, "TH_ACCOUNTING@NC-NET.OR.JP", "AQAAAAEAACcQAAAAEERbJegtTj6K/vYLNAryhjOOgZf7oDO/yQF9PbCmXYuTsb7x+uVu3+IHbU6Ft3oQpw==", null, false, "44327d80-85b1-4710-97ce-8703148537ee", "Admin", false, "th_accounting@nc-net.or.jp" });
+                values: new object[] { "51da857c-224d-40d3-9ffc-9fb03c9f6e8a", 0, "048225e1-17e2-42e1-a870-b93ecd01eb1f", "th_accounting@nc-net.or.jp", true, "Admin", "Admin", false, null, null, "TH_ACCOUNTING@NC-NET.OR.JP", "AQAAAAEAACcQAAAAEGWLynmzRicgjRdnLDnb/ldqv9SuxrINXfMB4HDsC7jNvVl/UeZGLhrROvAQrMV9ng==", null, false, "edac3aa4-0a21-4183-94e2-d2616f33a989", "Admin", false, "th_accounting@nc-net.or.jp" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -279,7 +282,7 @@ namespace NEMS.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "events");
+                name: "Events");
 
             migrationBuilder.DropTable(
                 name: "TimeTables");
