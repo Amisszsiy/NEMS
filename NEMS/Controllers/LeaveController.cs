@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NEMS.Data;
 using NEMS.Helper;
 using NEMS.Models;
 
 namespace NEMS.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class LeaveController : Controller
     {
         private readonly ApplicationDbContext _db;
