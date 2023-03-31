@@ -6,6 +6,7 @@
         {
             services.AddScoped<IClockService, Clock>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }

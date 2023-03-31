@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using NEMS.Data;
 using NEMS.Helper;
@@ -15,13 +16,15 @@ namespace NEMS.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IClockService _clock;
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
-        public WorkTimeController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, IClockService clock, IUserService userService)
+        public WorkTimeController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, IClockService clock, IUserService userService, IEmailService emailService)
         {
             _db = db;
             _userManager = userManager;
             _clock = clock;
             _userService = userService;
+            _emailService = emailService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -153,6 +156,9 @@ namespace NEMS.Controllers
                     }
                 }
             }
+
+            var message = new Message(new string[] { "nyu_miss@hotmail.com" }, "Test email", "This is the content from our email.");
+            _emailService.SendEmail(message);
 
             return View(allSummary);
         }
