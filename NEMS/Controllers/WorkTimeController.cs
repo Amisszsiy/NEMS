@@ -106,6 +106,9 @@ namespace NEMS.Controllers
 
             if(submit == "export")
             {
+                var message = new Message(new string[] { "nyu_miss@hotmail.com" }, "Test email", "This is the content from our email.");
+                _emailService.SendEmail(message);
+
                 IEnumerable<TimeTable> timeTables = _db.TimeTables
                     .Where(x => x.date >= allSummary.From)
                     .Where(x => x.date <= allSummary.Until)
@@ -156,9 +159,6 @@ namespace NEMS.Controllers
                     }
                 }
             }
-
-            var message = new Message(new string[] { "nyu_miss@hotmail.com" }, "Test email", "This is the content from our email.");
-            _emailService.SendEmail(message);
 
             return View(allSummary);
         }
