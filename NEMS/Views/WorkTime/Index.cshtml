@@ -3,6 +3,22 @@
 *@
 @model SummaryViewModel;
 @{
+    //Used for looping through empty/leave days along with workday
+    DateTime countDay;
+    DateTime countUntil;
+
+    if(Model.From.HasValue)
+    {
+        countDay = Model.From.Value;
+        countUntil = Model.Until.Value;
+    }
+    else
+    {
+        //If no value/page start, no conditions are met to loop empty days
+        countDay = DateTime.Today;
+        //-1 day in order to hide 1 auto generate leave row
+        countUntil = DateTime.Today.AddDays(-1);
+    }
 }
 <h1>Work Time Summary</h1>
 <hr />
@@ -38,23 +54,64 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(var row in Model.TimeTables)
+                        @foreach (var row in Model.TimeTables)
                         {
-                            <tr data-bs-toggle="modal" data-bs-target="#editModal" 
-                            data-bs-id="@row.id" 
+                            //countDay is less than rowDay assuming there's leave until this rowDay
+                            //thus, looping through gap to generate leave row
+                            while(row.date.Ticks > countDay.Ticks)
+                                {
+                                <tr>
+                                    <td>@countDay.ToShortDateString()</td>
+                                    <td colspan="6">Leave</td>
+                                    <td>
+                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addModal" data-bs-date="@countDay.ToString("s")">Fill</button>
+                                    </td>
+                                </tr>
+                                countDay = countDay.AddDays(1);
+                                }
+
+                                //If countDay and rowDay are equal, normally print workday row
+                                //Highlight red if clock in or out is missing by checking its default ticks value aka 0
+                            if (row.date.Ticks == countDay.Ticks)
+                            {
+                                <tr data-bs-toggle="modal" data-bs-target="#editModal"
+                            data-bs-id="@row.id"
                             data-bs-date="@row.date.ToShortDateString()"
                             data-bs-in="@row.clockin.ToString("s")"
-                            data-bs-out="@row.clockout.ToString("s")">
-                                <td>@row.date.ToShortDateString()</td>
-                                <td>@row.clockin.ToShortTimeString()</td>
-                                <td>@row.rClockin.ToShortTimeString()</td>
-                                <td>@row.clockout.ToShortTimeString()</td>
-                                <td>@row.rClockout.ToShortTimeString()</td>
-                                <td>@String.Format("{0:N2}",row.worktime)</td>
-                                <td>@String.Format("{0:N2}",row.ot)</td>
-                                <td>@String.Format("{0:N2}",row.et)</td>
-                            </tr>
+                            data-bs-out="@row.clockout.ToString("s")"
+                                style="color:@(row.clockin.Ticks==0||row.clockout.Ticks==0 ? "red" : "")">
+                                    <td>@row.date.ToShortDateString()</td>
+                                    <td>@row.clockin.ToShortTimeString()</td>
+                                    <td>@row.rClockin.ToShortTimeString()</td>
+                                    <td>@row.clockout.ToShortTimeString()</td>
+                                    <td>@row.rClockout.ToShortTimeString()</td>
+                                    <td>@String.Format("{0:N2}",row.worktime)</td>
+                                    <td>@String.Format("{0:N2}",row.ot)</td>
+                                    <td>@String.Format("{0:N2}",row.et)</td>
+                                </tr>
+                                countDay = countDay.AddDays(1);
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>@countDay.ToShortDateString()</td>
+                                    <td colspan="7">Duplicated</td>
+                                </tr>
+                            }
                         }
+
+                        @while(countDay.Ticks <= countUntil.Ticks)
+                        {
+                            //Loop over when Until date is met
+                                <tr>
+                                    <td>@countDay.ToShortDateString()</td>
+                                    <td colspan="6">Leave</td>
+                                    <td>
+                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addModal" data-bs-date="@countDay.ToString("s")">Fill</button>
+                                    </td>
+                                </tr>
+                                countDay = countDay.AddDays(1);
+                                }
                     </tbody>
                 </table>
             </div>
@@ -117,5 +174,54 @@
         editId.value = id
         editIn.value = cin
         editOut.value = out
+    })
+</script>
+
+        <!--Add time modal-->
+
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-controller="WorkTime" asp-action="addClock">
+                <div class="modal-body">
+                    <input type="hidden" asp-for="User" />
+                    <input type="hidden" asp-for="From" />
+                    <input type="hidden" asp-for="Until" />
+                    <div class="my-2">
+                        <input class="in form-control" type="datetime-local" step="any" asp-for="Clock.clockin" />
+                    </div>
+                    <div class="my-2">
+                        <input class="out form-control" type="datetime-local" step="any" asp-for="Clock.clockout" />
+                    </div>
+                </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var addModal = document.getElementById('addModal')
+    addModal.addEventListener('show.bs.modal', function (event) {
+
+        var tr = event.relatedTarget
+
+        var date = tr.getAttribute('data-bs-date')
+
+        var addDate = addModal.querySelector('.modal-title')
+        var addIn = addModal.querySelector('.modal-body .in')
+        var addOut = addModal.querySelector('.modal-body .out')
+
+        addDate.textContent = 'Add clock time of ' + date.replace("T00:00:00","")
+        addIn.value = date.replace("T00:00:00", "T08:30:00")
+        addOut.value = date.replace("T00:00:00", "T17:30:00")
+
     })
 </script>

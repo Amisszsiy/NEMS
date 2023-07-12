@@ -45,9 +45,12 @@
 <div class="container">
     <h1 class="align-items-start">Schedule</h1>
     <div class="row">
-        <div class="col">
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#leaveModal"><i class="bi bi-plus-square"></i> Leave</button>
-        </div>
+        @if (!User.IsInRole("Admin"))
+        {
+            <div class="col">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#leaveModal"><i class="bi bi-plus-square"></i> Leave</button>
+            </div>
+        }
         <div class="col">
             <form method="GET" asp-controller="Calendar" asp-action="Index">
                 <div class="row">

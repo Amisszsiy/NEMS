@@ -103,6 +103,11 @@ namespace NEMS.Helper
                 editTime.et = 9 - editTime.worktime;
                 editTime.ot = 0;
             }
+            else
+            {
+                editTime.et = 0;
+                editTime.ot = 0;
+            }
 
             return editTime;
         }

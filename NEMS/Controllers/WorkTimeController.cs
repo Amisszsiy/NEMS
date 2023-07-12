@@ -16,7 +16,6 @@ namespace NEMS.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IClockService _clock;
         private readonly IUserService _userService;
-        private readonly IEmailService _emailService;
 
         public WorkTimeController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, IClockService clock, IUserService userService, IEmailService emailService)
         {
@@ -24,13 +23,13 @@ namespace NEMS.Controllers
             _userManager = userManager;
             _clock = clock;
             _userService = userService;
-            _emailService = emailService;
         }
 
+        //Return default worktime table for each user
         [Authorize(Roles = "Admin")]
         public IActionResult Index(SummaryViewModel summary)
         {
-
+            //Provide default model data when first initialize WorkTime summary
             if (summary.From == null)
             {
                 summary.Users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
@@ -44,6 +43,7 @@ namespace NEMS.Controllers
             return View(summary);
         }
 
+        //Check personal worktime for user not admin
         public IActionResult CheckPersonalWorkTime(SummaryViewModel summary)
         {
             if(summary.From == null)
@@ -60,6 +60,7 @@ namespace NEMS.Controllers
             return View(summary);
         }
 
+        //Edit in/out time for specific user
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -92,6 +93,26 @@ namespace NEMS.Controllers
             return View("Index", summary);
         }
 
+        //Add in/out time from missing day for specific user
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public IActionResult addClock(SummaryViewModel summary)
+        {
+            summary.Clock.uid = summary.User;
+
+            if (!_db.TimeTables.Any(x => x.date == summary.Clock.clockin.Date && x.uid == summary.Clock.uid))
+            {
+                summary.Clock = _clock.addWorkDay(summary.Clock);
+                _db.TimeTables.Add(summary.Clock);
+                _db.SaveChanges();
+            }
+
+            summary = getQuery(summary);
+
+            return View("Index", summary);
+        }
+
         [Authorize(Roles = "Admin")]
         public IActionResult allSummary(AllSummaryModel allSummary, string submit)
         {
@@ -106,24 +127,25 @@ namespace NEMS.Controllers
 
             if(submit == "export")
             {
-                var message = new Message(new string[] { "nyu_miss@hotmail.com" }, "Test email", "This is the content from our email.");
-                _emailService.SendEmail(message);
-
+                //Query range of time to export
                 IEnumerable<TimeTable> timeTables = _db.TimeTables
                     .Where(x => x.date >= allSummary.From)
                     .Where(x => x.date <= allSummary.Until)
                     .OrderBy(x => x.date);
 
+                //Get all users to reference writing in each sheet
                 IEnumerable<ApplicationUser> users = _db.Users.Where(x => x.Id != _userService.getCurrentUser().Id);
 
+                //Prepare file
                 string format = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
                 string fileName = DateTime.Now.Date.ToShortDateString() + "_WorkTimeSummary.xlsx";
 
+                //Create workbook and loop through each user/sheet
                 using (var workbook = new XLWorkbook())
                 {
                     foreach(var user in users)
                     {
+                        //Get specific user in/out time from queried range above
                         IEnumerable<TimeTable> userTimeTables = timeTables.Where(x => x.uid == user.Id);
                         var worksheet = workbook.AddWorksheet(user.FirstName);
                         var currentRow = 1;
@@ -148,8 +170,14 @@ namespace NEMS.Controllers
                             worksheet.Cell(currentRow, 7).Value = Math.Round(day.et,2);
                             worksheet.Cell(currentRow, 8).Value = Math.Round(day.ot, 2) - Math.Round(day.et, 2);
                         }
+
+                        //Sum ot, et, net ot at last row
+                        worksheet.Cell(currentRow + 1, 6).Value = Math.Round(userTimeTables.Select(x => x.ot).Sum(),2);
+                        worksheet.Cell(currentRow + 1, 7).Value = Math.Round(userTimeTables.Select(x => x.et).Sum(),2);
+                        worksheet.Cell(currentRow + 1, 8).Value = Math.Round(userTimeTables.Select(x => x.ot).Sum() - userTimeTables.Select(x => x.et).Sum(),2);
                     }
 
+                    //Store written workbook in variable content and return as a file
                     using (var stream = new MemoryStream())
                     {
                         workbook.SaveAs(stream);

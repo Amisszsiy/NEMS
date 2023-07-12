@@ -1,6 +1,30 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Clock in/out rules";
 }
 <h1>@ViewData["Title"]</h1>
 
-<p>Rules</p>
+<style>
+    ul {
+        list-style-type: disc;
+        margin-left: 20px;
+        padding-left: 20px;
+    }
+
+    li {
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+</style>
+
+<ul>
+    <li>Normal working hours are from 8:30 AM to 5:30 PM.</li>
+    <li>You can enter the work as early as 6:05 a.m.</li>
+    <li>Check-in time will be rounded up every 30 minutes, e.g. Clock in at 8:31 a.m. The system will round up to 9:00 a.m.</li>
+    <li>The departure time will be rounded down every 30 minutes, for example, Clock out at 5:29 p.m. The system will be rounded down to 5:00 p.m.</li>
+    <li>OT will start counting from the 10th hour of work, e.g. entering work at 8:30 AM. OT will start counting hours from 6:30 PM.</li>
+    <li>If the working hours are absent, they will be deducted from the OT time.</li>
+    <li>OT will cut cycle every 25th of the month.</li>
+    <li>The latest entry time is 10:00 a.m. (except Wednesdays at 9:30 a.m.).</li>
+    <li>Can finish work as early as 4:00 p.m. (except Wednesday 3:30 p.m.)</li>
+    <li>If you forget to clock in-out, please notify the administrator.</li>
+</ul>
