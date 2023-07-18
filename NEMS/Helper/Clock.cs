@@ -65,18 +65,22 @@ namespace NEMS.Helper
             time.rClockin = Rounder.ceilingTime(time.clockin);
             time.rClockout = Rounder.floorTime(time.clockout);
 
-            TimeSpan diff = time.clockout - time.clockin;
-            TimeSpan rDiff = time.rClockout - Rounder.setStartOT(time.rClockin);
-            time.worktime = diff.TotalHours;
-            if (rDiff.TotalHours >= 10)
+            if(time.clockin.Ticks != 0 && time.clockout.Ticks != 0)
             {
-                time.ot = rDiff.TotalHours - 9;
-                time.et = 0;
-            }
-            else if (time.worktime < 9)
-            {
-                time.et = 9 - time.worktime;
-                time.ot = 0;
+                TimeSpan diff = time.clockout - time.clockin;
+                TimeSpan rDiff = time.rClockout - Rounder.setStartOT(time.rClockin);
+                time.worktime = diff.TotalHours;
+
+                if (rDiff.TotalHours >= 10)
+                {
+                    time.ot = rDiff.TotalHours - 9;
+                    time.et = 0;
+                }
+                else if (time.worktime < 9)
+                {
+                    time.et = 9 - time.worktime;
+                    time.ot = 0;
+                }
             }
 
             return time;

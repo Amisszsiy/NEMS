@@ -60,7 +60,7 @@
                             //thus, looping through gap to generate leave row
                             while(row.date.Ticks > countDay.Ticks)
                                 {
-                                <tr>
+                                <tr style="background-color:@(countDay.Date.DayOfWeek==DayOfWeek.Saturday||countDay.Date.DayOfWeek==DayOfWeek.Sunday ? "#FFCCCB" : "")">
                                     <td>@countDay.ToShortDateString()</td>
                                     <td colspan="6">Leave</td>
                                     <td>
@@ -79,11 +79,11 @@
                             data-bs-date="@row.date.ToShortDateString()"
                             data-bs-in="@row.clockin.ToString("s")"
                             data-bs-out="@row.clockout.ToString("s")"
-                                style="color:@(row.clockin.Ticks==0||row.clockout.Ticks==0 ? "red" : "")">
+                                style="background-color:@(row.date.DayOfWeek==DayOfWeek.Saturday||row.date.DayOfWeek==DayOfWeek.Sunday ? "#FFCCCB" : "")">
                                     <td>@row.date.ToShortDateString()</td>
-                                    <td>@row.clockin.ToShortTimeString()</td>
+                                    <td style="color:@(row.clockin.Ticks==0 ? "red" : "")">@row.clockin.ToShortTimeString()</td>
                                     <td>@row.rClockin.ToShortTimeString()</td>
-                                    <td>@row.clockout.ToShortTimeString()</td>
+                                    <td style="color:@(row.clockout.Ticks==0 ? "red" : "")">@row.clockout.ToShortTimeString()</td>
                                     <td>@row.rClockout.ToShortTimeString()</td>
                                     <td>@String.Format("{0:N2}",row.worktime)</td>
                                     <td>@String.Format("{0:N2}",row.ot)</td>
@@ -103,7 +103,7 @@
                         @while(countDay.Ticks <= countUntil.Ticks)
                         {
                             //Loop over when Until date is met
-                                <tr>
+                            <tr style="background-color:@(countDay.Date.DayOfWeek==DayOfWeek.Saturday||countDay.Date.DayOfWeek==DayOfWeek.Sunday ? "#FFCCCB" : "")">
                                     <td>@countDay.ToShortDateString()</td>
                                     <td colspan="6">Leave</td>
                                     <td>

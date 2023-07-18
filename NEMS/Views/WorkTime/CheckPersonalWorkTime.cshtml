@@ -3,6 +3,21 @@
 *@
 @model SummaryViewModel;
 @{
+    DateTime countDay;
+    DateTime countUntil;
+
+    if(Model.From.HasValue)
+    {
+        countDay = Model.From.Value;
+        countUntil = Model.Until.Value;
+    }
+    else
+    {
+        //If no value/page start, no conditions are met to loop empty days
+        countDay = DateTime.Today;
+        //-1 day in order to hide 1 auto generate leave row
+        countUntil = DateTime.Today.AddDays(-1);
+    }
 }
 <h1>Work Time Summary</h1>
 <hr />
@@ -34,16 +49,50 @@
                     <tbody>
                         @foreach (var row in Model.TimeTables)
                         {
-                            <tr>
-                                <td>@row.date.ToShortDateString()</td>
-                                <td>@row.clockin.ToShortTimeString()</td>
-                                <td>@row.rClockin.ToShortTimeString()</td>
-                                <td>@row.clockout.ToShortTimeString()</td>
-                                <td>@row.rClockout.ToShortTimeString()</td>
-                                <td>@String.Format("{0:N2}",row.worktime)</td>
-                                <td>@String.Format("{0:N2}",row.ot)</td>
-                                <td>@String.Format("{0:N2}",row.et)</td>
+                            //countDay is less than rowDay assuming there's leave until this rowDay
+                            //thus, looping through gap to generate leave row
+                            while (row.date.Ticks > countDay.Ticks)
+                            {
+                                    <tr style="background-color:@(countDay.Date.DayOfWeek==DayOfWeek.Saturday||countDay.Date.DayOfWeek==DayOfWeek.Sunday ? "#FFCCCB" : "")">
+                                        <td>@countDay.ToShortDateString()</td>
+                                        <td colspan="7">Leave</td>
+                                </tr>
+                                countDay = countDay.AddDays(1);
+                            }
+
+                            //If countDay and rowDay are equal, normally print workday row
+                            //Highlight red if clock in or out is missing by checking its default ticks value aka 0
+                            if(row.date.Ticks == countDay.Ticks)
+                            {
+                                <tr>
+                                    <td>@row.date.ToShortDateString()</td>
+                                    <td>@row.clockin.ToShortTimeString()</td>
+                                    <td>@row.rClockin.ToShortTimeString()</td>
+                                    <td>@row.clockout.ToShortTimeString()</td>
+                                    <td>@row.rClockout.ToShortTimeString()</td>
+                                    <td>@String.Format("{0:N2}",row.worktime)</td>
+                                    <td>@String.Format("{0:N2}",row.ot)</td>
+                                    <td>@String.Format("{0:N2}",row.et)</td>
+                                </tr>
+                                countDay = countDay.AddDays(1);
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>@countDay.ToShortDateString()</td>
+                                    <td colspan="7">Duplicated</td>
+                                </tr>
+                            }
+                        }
+
+                        @while(countDay.Ticks <= countUntil.Ticks)
+                        {
+                            //Loop over when Until date is met
+                            <tr style="background-color:@(countDay.Date.DayOfWeek==DayOfWeek.Saturday||countDay.Date.DayOfWeek==DayOfWeek.Sunday ? "#FFCCCB" : "")">
+                                <td>@countDay.ToShortDateString()</td>
+                                <td colspan="7">Leave</td>
                             </tr>
+                            countDay = countDay.AddDays(1);
                         }
                     </tbody>
                 </table>

@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -145,6 +146,9 @@ namespace NEMS.Controllers
                 {
                     foreach(var user in users)
                     {
+                        //Set up date pointer
+                        DateTime pointer = allSummary.From.Value;
+
                         //Get specific user in/out time from queried range above
                         IEnumerable<TimeTable> userTimeTables = timeTables.Where(x => x.uid == user.Id);
                         var worksheet = workbook.AddWorksheet(user.FirstName);
@@ -160,15 +164,50 @@ namespace NEMS.Controllers
 
                         foreach(var day in userTimeTables)
                         {
+                            while(day.date.Ticks > pointer.Date.Ticks)
+                            {
+                                currentRow++;
+                                worksheet.Cell(currentRow, 1).Value = pointer.Date.ToShortDateString();
+                                if (pointer.Date.DayOfWeek == DayOfWeek.Sunday || pointer.Date.DayOfWeek == DayOfWeek.Saturday)
+                                {
+                                    worksheet.Cell(currentRow, 1).Style.Font.SetFontColor(XLColor.Red);
+                                }
+                                pointer = pointer.AddDays(1);
+                            }
+
+                            if(day.date.Ticks == pointer.Date.Ticks)
+                            {
+                                currentRow++;
+                                worksheet.Cell(currentRow, 1).Value = day.date.ToShortDateString();
+                                if(day.date.DayOfWeek == DayOfWeek.Sunday || day.date.DayOfWeek == DayOfWeek.Saturday)
+                                {
+                                    worksheet.Cell(currentRow, 1).Style.Font.SetFontColor(XLColor.Red);
+                                }
+                                worksheet.Cell(currentRow, 2).Value = day.clockin.ToShortTimeString();
+                                worksheet.Cell(currentRow, 3).Value = day.rClockin.ToShortTimeString();
+                                worksheet.Cell(currentRow, 4).Value = day.clockout.ToShortTimeString();
+                                worksheet.Cell(currentRow, 5).Value = day.rClockout.ToShortTimeString();
+                                worksheet.Cell(currentRow, 6).Value = Math.Round(day.ot, 2);
+                                worksheet.Cell(currentRow, 7).Value = Math.Round(day.et, 2);
+                                worksheet.Cell(currentRow, 8).Value = Math.Round(day.ot, 2) - Math.Round(day.et, 2);
+                                pointer = pointer.AddDays(1);
+                            }
+                            else
+                            {
+                                currentRow++;
+                                //If we got here, something have gone wrong
+                            }
+                        }
+
+                        while (pointer.Date.Ticks <= allSummary.Until.Value.Date.Ticks)
+                        {
                             currentRow++;
-                            worksheet.Cell(currentRow, 1).Value = day.date.ToShortDateString();
-                            worksheet.Cell(currentRow, 2).Value = day.clockin.ToShortTimeString();
-                            worksheet.Cell(currentRow, 3).Value = day.rClockin.ToShortTimeString();
-                            worksheet.Cell(currentRow, 4).Value = day.clockout.ToShortTimeString();
-                            worksheet.Cell(currentRow, 5).Value = day.rClockout.ToShortTimeString();
-                            worksheet.Cell(currentRow, 6).Value = Math.Round(day.ot,2);
-                            worksheet.Cell(currentRow, 7).Value = Math.Round(day.et,2);
-                            worksheet.Cell(currentRow, 8).Value = Math.Round(day.ot, 2) - Math.Round(day.et, 2);
+                            worksheet.Cell(currentRow, 1).Value = pointer.Date.ToShortDateString();
+                            if (pointer.Date.DayOfWeek == DayOfWeek.Sunday || pointer.Date.DayOfWeek == DayOfWeek.Saturday)
+                            {
+                                worksheet.Cell(currentRow, 1).Style.Font.SetFontColor(XLColor.Red);
+                            }
+                            pointer = pointer.AddDays(1);
                         }
 
                         //Sum ot, et, net ot at last row
