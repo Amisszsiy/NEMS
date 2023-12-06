@@ -8,7 +8,6 @@ namespace NEMS.Helper
     {
         TimeTable clockIn(TimeTable time, DateTime now);
         TimeTable clockOut(TimeTable time, DateTime now);
-        TimeTable calculateClockOut(TimeTable time, DateTime now);
         TimeTable addWorkDay(TimeTable time);
         TimeTable editWorkDay(TimeTable editTime, TimeTable time);
     }
@@ -31,28 +30,19 @@ namespace NEMS.Helper
         }
         public TimeTable clockOut(TimeTable time, DateTime now)
         {
-            time.uid = _userService.getCurrentUser().Id;
-            time.date = now.Date;
+            //Check if already clock-in
+            if(time.clockin.Ticks == 0)
+            {
+                time.uid = _userService.getCurrentUser().Id;
+                time.date = now.Date;
+            }
+
             time.clockout = now;
             time.rClockout = Rounder.floorTime(time.clockout);
 
-            return time;
-        }
-        public TimeTable calculateClockOut(TimeTable time, DateTime now)
-        {
-            time.clockout = now;
-            time.rClockout = Rounder.floorTime(time.clockout);
-            TimeSpan diff = time.clockout - time.clockin;
-            TimeSpan rDiff = time.rClockout - Rounder.setStartOT(time.rClockin);
-            time.worktime = diff.TotalHours;
-            if(rDiff.TotalHours >= 10)
+            if (time.clockin.Ticks != 0)
             {
-                time.ot = rDiff.TotalHours - 9;
-                time.et = 0;
-            }else if(time.worktime < 9)
-            {
-                time.et = 9 - time.worktime;
-                time.ot = 0;
+                return calculateWorkTime(time);
             }
 
             return time;
@@ -67,20 +57,7 @@ namespace NEMS.Helper
 
             if(time.clockin.Ticks != 0 && time.clockout.Ticks != 0)
             {
-                TimeSpan diff = time.clockout - time.clockin;
-                TimeSpan rDiff = time.rClockout - Rounder.setStartOT(time.rClockin);
-                time.worktime = diff.TotalHours;
-
-                if (rDiff.TotalHours >= 10)
-                {
-                    time.ot = rDiff.TotalHours - 9;
-                    time.et = 0;
-                }
-                else if (time.worktime < 9)
-                {
-                    time.et = 9 - time.worktime;
-                    time.ot = 0;
-                }
+                return calculateWorkTime(time);
             }
 
             return time;
@@ -94,26 +71,30 @@ namespace NEMS.Helper
             editTime.clockout = time.clockout;
             editTime.rClockout = Rounder.floorTime(editTime.clockout);
 
-            TimeSpan diff = editTime.clockout - editTime.clockin;
-            TimeSpan rDiff = editTime.rClockout - Rounder.setStartOT(editTime.rClockin);
-            editTime.worktime = diff.TotalHours;
+            return calculateWorkTime(editTime);
+        }
+
+        private TimeTable calculateWorkTime(TimeTable worktime)
+        {
+            TimeSpan diff = worktime.clockout - worktime.clockin;
+            TimeSpan rDiff = worktime.rClockout - Rounder.setStartOT(worktime.rClockin);
+            worktime.worktime = diff.TotalHours;
             if (rDiff.TotalHours >= 10)
             {
-                editTime.ot = rDiff.TotalHours - 9;
-                editTime.et = 0;
+                worktime.ot = rDiff.TotalHours - 9;
+                worktime.et = 0;
             }
-            else if (editTime.worktime < 9)
+            else if (worktime.worktime < 9)
             {
-                editTime.et = 9 - editTime.worktime;
-                editTime.ot = 0;
+                worktime.et = 9 - worktime.worktime;
+                worktime.ot = 0;
             }
             else
             {
-                editTime.et = 0;
-                editTime.ot = 0;
+                worktime.et = 0;
+                worktime.ot = 0;
             }
-
-            return editTime;
+            return worktime;
         }
     }
 }
