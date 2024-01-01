@@ -155,7 +155,14 @@ namespace NEMS.Controllers
 
             //Set offset to 25th of current month or previous month depending on current date
             //Calculate ot/et is range from 26 of previous month to 25 of current month
-            offset = (now.Day > 25)? new DateTime(now.Year, now.Month, 26): new DateTime(now.Year, now.Month - 1, 26);
+            if(now.Month == 1)
+            {
+                offset = (now.Day > 25) ? new DateTime(now.Year, now.Month, 26) : new DateTime(now.Year-1, 12, 26);
+            }
+            else
+            {
+                offset = (now.Day > 25) ? new DateTime(now.Year, now.Month, 26) : new DateTime(now.Year, now.Month - 1, 26);
+            }
 
             //Query total worktime of current month based on OT offset above
             IEnumerable<TimeTable> thisMonth = _db.TimeTables.Where(x => x.date.Date >= offset.Date)
