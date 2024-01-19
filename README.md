@@ -3,6 +3,7 @@ Project name: NEMS (New Employee Management System)
 Description: 
 Web app for employee to clockin/out and manage schedule such as meeting or leave.
 Besides employee usage, admin can control and manage worktime, View and export work time report.
+Clockin/out constraints can be found on privacy view.
 
 Technologies: Standalone project .NET core MVC (6), Entity Framework Core 6, Microsoft SQL Server 2022
 
