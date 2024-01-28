@@ -1,4 +1,4 @@
-Project name: NEMS (New Employee Management System)
+Project name: New Employee Management System (Simplified version)
 
 Description: 
 Web app for employee to clockin/out and manage schedule such as meeting or leave.
